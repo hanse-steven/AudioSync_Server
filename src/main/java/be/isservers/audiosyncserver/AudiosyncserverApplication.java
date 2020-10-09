@@ -50,7 +50,7 @@ public class AudiosyncserverApplication {
         }
 
         if (filename != null){
-            File file = new File(filename);
+            File file = new File(Settings.getWorkDirectory() + filename);
             InputStream inputStream = new FileInputStream(file);
 
             response.setContentType("audio/mpeg");
