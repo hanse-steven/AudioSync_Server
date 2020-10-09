@@ -28,16 +28,7 @@ public class AudiosyncserverApplication {
     public static void main(String[] args) {
         SpringApplication.run(AudiosyncserverApplication.class, args);
 
-        musicTab = new ArrayList<>();
-        File directory = new File(Music.PathToMusic);
-        File[] files = directory.listFiles();
-        if (files != null) {
-            for (File file : files) {
-                if (file.isFile() && file.getName().contains(".mp3"))
-                    musicTab.add(new Music(file.getName()));
-            }
-            Collections.sort(musicTab);
-        }
+        loadListOfMusic();
     }
 
     @RequestMapping("/")
@@ -92,6 +83,24 @@ public class AudiosyncserverApplication {
         }
 
         return new Gson().toJson(listingMusic);
+    }
+
+    @RequestMapping("/reload")
+    public void reloadListOfMusic() {
+        AudiosyncserverApplication.loadListOfMusic();
+    }
+
+    public static void loadListOfMusic(){
+        musicTab = new ArrayList<>();
+        File directory = new File(Music.PathToMusic);
+        File[] files = directory.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                if (file.isFile() && file.getName().contains(".mp3"))
+                    musicTab.add(new Music(file.getName()));
+            }
+            Collections.sort(musicTab);
+        }
     }
 
     private boolean searchInArray(String val,ArrayList<Music> data){
