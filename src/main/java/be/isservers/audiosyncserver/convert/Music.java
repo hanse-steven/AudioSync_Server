@@ -7,8 +7,6 @@ import com.google.gson.annotations.SerializedName;
 import java.io.File;
 import java.io.Serializable;
 
-import static be.isservers.be.audiosyncserver.convert.MD5OfFile.calculateMD5;
-
 public class Music implements Comparable<Music>, Serializable {
     @SerializedName("hash")
     @Expose
@@ -33,7 +31,7 @@ public class Music implements Comparable<Music>, Serializable {
     }
     public Music(String name) {
         this.setName(name);
-        this.setHash(calculateMD5(new File(PathToMusic + "/" + name)));
+        this.setHash(MD5OfFile.calculateMD5(new File(PathToMusic + "/" + name)));
     }
 
 
