@@ -1,9 +1,13 @@
-package be.isservers.be.audiosyncserver;
+package be.isservers.audiosyncserver;
 
-import be.isservers.be.audiosyncserver.convert.ListingMusic;
-import be.isservers.be.audiosyncserver.convert.Music;
+import be.isservers.audiosyncserver.convert.ListingMusic;
+import be.isservers.audiosyncserver.convert.Music;
+import be.isservers.audiosyncserver.parameter.Settings;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.*;
 import org.springframework.boot.autoconfigure.*;
 import org.springframework.util.FileCopyUtils;
@@ -23,9 +27,12 @@ import org.springframework.web.bind.annotation.*;
 public class AudiosyncserverApplication {
 
     private static ArrayList<Music> musicTab;
+    private static Logger logger = LoggerFactory.getLogger(AudiosyncserverApplication.class);
 
     public static void main(String[] args) {
         SpringApplication.run(AudiosyncserverApplication.class, args);
+        logger.info("Working directory: " + Settings.getWorkDirectory());
+
 
         musicTab = new ArrayList<>();
         File directory = new File(Music.PathToMusic);
@@ -40,28 +47,42 @@ public class AudiosyncserverApplication {
     }
 
     @RequestMapping("/")
-    String home() {
+    public String home() {
         return new ToStringBuilder(this).append("musicTab",musicTab).toString();
     }
 
     @RequestMapping("/music/{hash}")
     public void downloadMusic(HttpServletResponse response,@PathVariable String hash) throws IOException {
-        String filename = hash;
+        String filename = null;
 
-        File file = new File(filename);
-        InputStream inputStream = new FileInputStream(file);
+        for (Music music : musicTab) {
+            if (music.getHash().equals(hash)) filename = music.getName();
+        }
 
-        response.setContentType("audio/mpeg");
-        response.setHeader("Content-Disposition", "attachment; filename=" + filename);
-        response.setContentLength((int) file.length());
+        if (filename != null){
+            File file = new File(filename);
+            InputStream inputStream = new FileInputStream(file);
 
-        FileCopyUtils.copy(inputStream, response.getOutputStream());
+            response.setContentType("audio/mpeg");
+            response.setHeader("Content-Disposition", "attachment; filename=" + filename);
+            response.setContentLength((int) file.length());
+
+            FileCopyUtils.copy(inputStream, response.getOutputStream());
+        }
+        else{
+            String message = "BAD_HASH";
+
+            response.setContentType("text/plain");
+            response.setContentLength((int) message.length());
+
+            FileCopyUtils.copy(message.getBytes(),response.getOutputStream());
+        }
     }
 
     @RequestMapping(value="/synchronization", method= RequestMethod.POST)
     public String synchronization(@RequestBody String payload) {
 
-        ArrayList<String> dataFromPhone = new Gson().fromJson(payload,ArrayList.class);
+        ArrayList<String> dataFromPhone = new Gson().fromJson(payload,new TypeToken<ArrayList<String>>(){}.getType());
         ArrayList<Music> dataFromPhoneFormated = new ArrayList<>();
         ListingMusic listingMusic = new ListingMusic();
 
@@ -81,7 +102,7 @@ public class AudiosyncserverApplication {
                 listingMusic.getToDownload().add(music);
         }
 
-        return "RETOUR DE LA FONCTION: " + new Gson().toJson(listingMusic);
+        return new Gson().toJson(listingMusic);
     }
 
     private boolean searchInArray(String val,ArrayList<Music> data){

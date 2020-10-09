@@ -1,4 +1,4 @@
-package be.isservers.be.audiosyncserver.convert;
+package be.isservers.audiosyncserver.convert;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

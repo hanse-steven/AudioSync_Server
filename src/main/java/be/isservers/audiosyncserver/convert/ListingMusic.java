@@ -1,4 +1,4 @@
-package be.isservers.be.audiosyncserver.convert;
+package be.isservers.audiosyncserver.convert;
 
 import java.io.Serializable;
 import java.util.ArrayList;
