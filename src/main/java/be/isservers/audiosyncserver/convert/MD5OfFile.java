@@ -1,5 +1,8 @@
 package be.isservers.audiosyncserver.convert;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -11,12 +14,14 @@ import java.security.NoSuchAlgorithmException;
 
 
 public class MD5OfFile {
+    private static Logger logger = LoggerFactory.getLogger(MD5OfFile.class);
+
     public static String calculateMD5(File updateFile) {
         MessageDigest digest;
         try {
             digest = MessageDigest.getInstance("MD5");
         } catch (NoSuchAlgorithmException e) {
-            System.out.println("MD5OfFile - Exception while getting digest");
+            logger.error("Exception while getting digest");
             return null;
         }
 
@@ -24,7 +29,7 @@ public class MD5OfFile {
         try {
             is = new FileInputStream(updateFile);
         } catch (FileNotFoundException e) {
-            System.out.println("MD5OfFile - Exception while getting FileInputStream");
+            logger.error("Exception while getting FileInputStream");
             return null;
         }
 
@@ -46,7 +51,7 @@ public class MD5OfFile {
             try {
                 is.close();
             } catch (IOException e) {
-                System.out.println("MD5OfFile - Exception on closing MD5 input stream");
+                logger.error("Exception on closing MD5 input stream");
             }
         }
     }
