@@ -2,12 +2,9 @@ package be.isservers.audiosyncserver;
 
 import be.isservers.audiosyncserver.convert.ListingMusic;
 import be.isservers.audiosyncserver.convert.Music;
-import be.isservers.audiosyncserver.parameter.Settings;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.*;
 import org.springframework.boot.autoconfigure.*;
 import org.springframework.util.FileCopyUtils;
@@ -27,12 +24,9 @@ import org.springframework.web.bind.annotation.*;
 public class AudiosyncserverApplication {
 
     private static ArrayList<Music> musicTab;
-    private static Logger logger = LoggerFactory.getLogger(AudiosyncserverApplication.class);
 
     public static void main(String[] args) {
         SpringApplication.run(AudiosyncserverApplication.class, args);
-        logger.info("Working directory: " + Settings.getWorkDirectory());
-
 
         musicTab = new ArrayList<>();
         File directory = new File(Music.PathToMusic);
