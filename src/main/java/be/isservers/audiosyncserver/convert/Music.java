@@ -1,5 +1,6 @@
 package be.isservers.audiosyncserver.convert;
 
+import be.isservers.audiosyncserver.parameter.Settings;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -16,7 +17,7 @@ public class Music implements Comparable<Music>, Serializable {
     @Expose
     private String name;
 
-    public static String PathToMusic = ".";
+    public static String PathToMusic = Settings.getWorkDirectory();
 
     public Music() {}
 
