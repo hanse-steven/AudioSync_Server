@@ -1,6 +1,7 @@
 package be.isservers.be.audiosyncserver.convert;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -10,13 +11,13 @@ public class ListingMusic implements Serializable {
 
     @SerializedName("ToKeep")
     @Expose
-    private List<Music> toKeep = null;
+    private List<Music> toKeep = new ArrayList<>();
     @SerializedName("ToDelete")
     @Expose
-    private List<Music> toDelete = null;
+    private List<Music> toDelete = new ArrayList<>();
     @SerializedName("ToDownload")
     @Expose
-    private List<Music> toDownload = null;
+    private List<Music> toDownload = new ArrayList<>();
     @SerializedName("SizeToDownload")
     @Expose
     private String sizeToDownload = null;

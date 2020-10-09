@@ -1,6 +1,8 @@
 package be.isservers.be.audiosyncserver;
 
+import be.isservers.be.audiosyncserver.convert.ListingMusic;
 import be.isservers.be.audiosyncserver.convert.Music;
+import com.google.gson.Gson;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.springframework.boot.*;
 import org.springframework.boot.autoconfigure.*;
@@ -14,9 +16,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @EnableAutoConfiguration
@@ -44,20 +44,51 @@ public class AudiosyncserverApplication {
         return new ToStringBuilder(this).append("musicTab",musicTab).toString();
     }
 
-
-
     @RequestMapping("/music/{hash}")
     public void downloadMusic(HttpServletResponse response,@PathVariable String hash) throws IOException {
-            String filename = hash;
+        String filename = hash;
 
-            File file = new File(filename);
-            InputStream inputStream = new FileInputStream(file);
+        File file = new File(filename);
+        InputStream inputStream = new FileInputStream(file);
 
-            response.setContentType("text/csv");
-            response.setHeader("Content-Disposition", "attachment; filename=" + filename);
-            response.setContentLength((int) file.length());
+        response.setContentType("audio/mpeg");
+        response.setHeader("Content-Disposition", "attachment; filename=" + filename);
+        response.setContentLength((int) file.length());
 
-            FileCopyUtils.copy(inputStream, response.getOutputStream());
+        FileCopyUtils.copy(inputStream, response.getOutputStream());
+    }
+
+    @RequestMapping(value="/synchronization", method= RequestMethod.POST)
+    public String synchronization(@RequestBody String payload) {
+
+        ArrayList<String> dataFromPhone = new Gson().fromJson(payload,ArrayList.class);
+        ArrayList<Music> dataFromPhoneFormated = new ArrayList<>();
+        ListingMusic listingMusic = new ListingMusic();
+
+        for (String o : dataFromPhone) {
+            dataFromPhoneFormated.add(new Music().withSerializedString(o));
+        }
+
+        for (Music music : dataFromPhoneFormated) {
+            if (searchInArray(music.getHash(),musicTab))
+                listingMusic.getToKeep().add(music);
+            else
+                listingMusic.getToDelete().add(music);
+        }
+
+        for (Music music : musicTab) {
+            if (!searchInArray(music.getHash(),dataFromPhoneFormated))
+                listingMusic.getToDownload().add(music);
+        }
+
+        return "RETOUR DE LA FONCTION: " + new Gson().toJson(listingMusic);
+    }
+
+    private boolean searchInArray(String val,ArrayList<Music> data){
+        for (Music music : data) {
+            if (music.getHash().equals(val)) return true;
+        }
+        return false;
     }
 
 }

@@ -46,6 +46,13 @@ public class Music implements Comparable<Music>, Serializable {
     public void setHash(String MD5) { this.hash = MD5; }
     public String getHash() { return hash; }
 
+    public Music withSerializedString(String buffer){
+        int pos = buffer.lastIndexOf("-");
+        this.setName(buffer.substring(0,pos));
+        this.setHash(buffer.substring(pos+1,buffer.length()));
+        return this;
+    }
+
     @Override
     public String toString() {
         return name.replace(".mp3","") + '-' + hash;
