@@ -20,7 +20,7 @@ public class ListingMusic implements Serializable {
     private List<Music> toDownload = new ArrayList<>();
     @SerializedName("SizeToDownload")
     @Expose
-    private String sizeToDownload = null;
+    private String sizeToDownload = "0 mb";
 
     /**
      * No args constructor for use in serialization
