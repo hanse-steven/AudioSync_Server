@@ -76,15 +76,10 @@ public class AudiosyncserverApplication {
     @RequestMapping(value="/synchronization", method= RequestMethod.POST)
     public String synchronization(@RequestBody String payload) {
 
-        ArrayList<String> dataFromPhone = new Gson().fromJson(payload,new TypeToken<ArrayList<String>>(){}.getType());
-        ArrayList<Music> dataFromPhoneFormated = new ArrayList<>();
+        ArrayList<Music> dataFromPhone = new Gson().fromJson(payload,new TypeToken<ArrayList<Music>>(){}.getType());
         ListingMusic listingMusic = new ListingMusic();
 
-        for (String o : dataFromPhone) {
-            dataFromPhoneFormated.add(new Music().withSerializedString(o));
-        }
-
-        for (Music music : dataFromPhoneFormated) {
+        for (Music music : dataFromPhone) {
             if (searchInArray(music.getHash(),musicTab))
                 listingMusic.getToKeep().add(music);
             else
@@ -92,7 +87,7 @@ public class AudiosyncserverApplication {
         }
 
         for (Music music : musicTab) {
-            if (!searchInArray(music.getHash(),dataFromPhoneFormated))
+            if (!searchInArray(music.getHash(),dataFromPhone))
                 listingMusic.getToDownload().add(music);
         }
 
